@@ -5,8 +5,12 @@ import java.util.*;
 
 public class BookLinkedList {
 
-    Object get(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    Book get(int i) {
+        if (i < 0) throw new IndexOutOfBoundsException("Negative index: " + i);
+        Node current = head;
+        for (int index = 0; index < i && current != null; index++) current = current.next;
+        if (current == null) throw new IndexOutOfBoundsException("Index: " + i);
+        return current.data;
     }
 
     int size() {

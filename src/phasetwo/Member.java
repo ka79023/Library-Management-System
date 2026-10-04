@@ -4,6 +4,15 @@ import java.io.*;
 import java.util.List;
 
 public class Member implements Serializable {
+    private static final long serialVersionUID = 1083352966239952113L;
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        int count = 0;
+        for (Book book : borrowedBooks) if (book != null) borrowedBooks[count++] = book;
+        for (int i = count; i < borrowedBooks.length; i++) borrowedBooks[i] = null;
+        borrowedCount = count;
+    }
     private String name;
     private int memberid;
     private Book[] borrowedBooks;
@@ -13,7 +22,7 @@ public class Member implements Serializable {
         this.name = name;
         this.memberid = memberid;
        borrowedBooks = new Book[maxBooks];  
-       borrowedCount++;
+       borrowedCount = 0;
     }
 
     public String getName() {
@@ -24,27 +33,21 @@ public class Member implements Serializable {
         return memberid;
     }
 
-    public void borrowBook(Book book) {
-        if (borrowedCount < borrowedBooks.length) {
-            borrowedBooks[borrowedCount++] = book;
-        } else {
-            System.out.println("You already borrowed alots  books!");
-        }
+    public boolean borrowBook(Book book) {
+        if (borrowedCount >= borrowedBooks.length) return false;
+        borrowedBooks[borrowedCount++] = book;
+        return true;
     }
 
-   
-  public void returnBook(Book book) {
-     for (int i = 0; i < borrowedCount; i++) {
-          if (borrowedBooks[i] == book) {
-        
-         for (int j = i; j < borrowedCount - 1; j++) {
-        borrowedBooks[j] = borrowedBooks[j + 1];
-         }
-         borrowedBooks[--borrowedCount] = null;
-         
-      }
-     }
-   System.out.println("This book was not borrowed by you!");
+    public boolean returnBook(Book book) {
+        for (int i = 0; i < borrowedCount; i++) {
+            if (borrowedBooks[i] != null && borrowedBooks[i].getTitle().equalsIgnoreCase(book.getTitle())) {
+                for (int j = i; j < borrowedCount - 1; j++) borrowedBooks[j] = borrowedBooks[j + 1];
+                borrowedBooks[--borrowedCount] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
   public String showBorrowedBooks() {

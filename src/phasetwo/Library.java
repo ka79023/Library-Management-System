@@ -50,7 +50,7 @@ public class Library {
 
     String result = "Available Books:\n";
     for (int i = 0; i < books.size(); i++) {
-        result += ((Book) books.get(i)).display() + "\n";
+        if (!books.get(i).isBorrowed()) result += books.get(i).display() + "\n";
     }
     return result;
 
@@ -95,7 +95,7 @@ public class Library {
             return false;
         }
 
-        member.borrowBook(book);
+        if (!member.borrowBook(book)) return false;
         book.setBorrowed(true);
         System.out.println("✅ Book '" + book.getTitle() + "' borrowed by " + member.getName() + "!");
         return true;
@@ -110,7 +110,7 @@ public class Library {
             return false;
         }
 
-        member.returnBook(book);
+        if (!member.returnBook(book)) return false;
         book.setBorrowed(false);
         System.out.println("✅ Book returned successfully.");
         return true;
@@ -178,7 +178,7 @@ public class Library {
 
     try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("librarian.dat"))) {
         librarian = (Librarian) in.readObject();
-       JOptionPane.showMessageDialog(null,"✅ Librarian info loaded!");
+       System.out.println("Librarian info loaded.");
         
     } catch (IOException | ClassNotFoundException e) {
         System.out.println("❌ Failed to load librarian info: " + e.getMessage());
